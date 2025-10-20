@@ -289,7 +289,7 @@ try:
 
             weights /= np.sum(weights)
 
-            particles = resample_particles(particles, weights, alpha_fast, alpha_slow)
+            particles = resample_particles(particles, weights, w_fast, w_slow)
 
             # Draw detected objects
             cam.draw_aruco_objects(colour)
@@ -306,7 +306,6 @@ try:
             # Draw map
             draw_world(est_pose, particles, world)
             cv2.imwrite(f"world{counter}.png", world)
-    
     
 
 finally: 
