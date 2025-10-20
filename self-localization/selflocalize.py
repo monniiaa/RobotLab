@@ -241,7 +241,7 @@ try:
     w_fast = 0.0
     alpha_slow = 1
     alpha_fast = 1
-
+    counter = 0
     #Initialize the robot
     if isRunningOnArlo():
         arlo = CalibratedRobot()
@@ -291,8 +291,9 @@ try:
             if not pathing.seen_all_landmarks():
                 distance, angle = pathing.explore_step(False)
             else:
+                counter +=1
                 distance, angle = pathing.move_towards_goal_step(est_pose, center)
-                cv2.imwrite("world.png", world)
+                cv2.imwrite(f"world{counter}.png", world)
 
                 
                     
