@@ -127,7 +127,7 @@ def sample_motion_model(particles_list, distance, angle, sigma_d, sigma_theta):
         particle.add_uncertainty(particles_list, sigma_d, sigma_theta)
 
 
-def measurement_model(particle_list, landmarkIDs, dists, angles, sigma_d, sigma_theta):
+def measurement_model(particle_list, ObjectIDs, dists, angles, sigma_d, sigma_theta):
     for particle in particle_list:
         x_i = particle.getX()
         y_i = particle.getY()
@@ -136,7 +136,7 @@ def measurement_model(particle_list, landmarkIDs, dists, angles, sigma_d, sigma_
         p_observation_given_x = 1.0
 
         #p(z|x) = sum over the probability for all landmarks
-        for landmarkID, dist, angle in zip(landmarkIDs, dists, angles):
+        for landmarkID, dist, angle in zip(ObjectIDs, dists, angles):
             if landmarkID in landmarkIDs:
                 l_x, l_y = landmarks[landmarkID]
                 d_i = np.sqrt((l_x - x_i)**2 + (l_y - y_i)**2)
@@ -213,6 +213,8 @@ try:
 
     counter = 0
 
+    w_slow = 0.0
+    w_fast = 0.0
     alpha_slow = 1
     alpha_fast = 1
     #Initialize the robot
