@@ -164,14 +164,14 @@ def resample_particles(particle_list, weights, w_fast, w_slow):
     resampled = []
 
     for _ in range(len(particle_list)):
-        #if random.random() < max(0.0, 1.0 - w_fast /w_slow):
-        #    p = initialize_particles(1)[0]
-        #    resampled.append(p)
-        #else:
-        z = np.random.rand()
-        idx = np.searchsorted(cdf, z)
-        p_resampled = particle.Particle(particle_list[idx].getX(), particle_list[idx].getY(), particle_list[idx].getTheta(), 1.0/(len(particle_list)))
-        resampled.append(p_resampled)
+        if random.random() < max(0.0, 1.0 - w_fast /w_slow):
+            p = initialize_particles(1)[0]
+            resampled.append(p)
+        else:
+            z = np.random.rand()
+            idx = np.searchsorted(cdf, z)
+            p_resampled = particle.Particle(particle_list[idx].getX(), particle_list[idx].getY(), particle_list[idx].getTheta(), 1.0/(len(particle_list)))
+            resampled.append(p_resampled)
             
     return resampled
 
@@ -215,8 +215,8 @@ try:
 
     w_slow = 1
     w_fast = 1
-    alpha_slow = 1
-    alpha_fast = 1
+    alpha_slow = 0.8
+    alpha_fast = 0.9
     #Initialize the robot
     if isRunningOnArlo():
         arlo = CalibratedRobot()
