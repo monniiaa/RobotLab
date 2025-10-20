@@ -15,7 +15,7 @@ import cv2
 from LandmarkOccupancyGrid import LandmarkOccupancyGrid
 
 # Flags
-showGUI = False  # Whether or not to open GUI windows
+showGUI = True  # Whether or not to open GUI windows
 onRobot = True # Whether or not we are running on the Arlo robot
 
 
@@ -293,9 +293,7 @@ try:
             else:
                 counter +=1
                 distance, angle = pathing.move_towards_goal_step(est_pose, center)
-                cv2.imwrite(f"world{counter}.png", world)
-
-                
+     
                     
         sample_motion_model(particles, distance, angle, sigma_d, sigma_theta)
         # Fetch next frame
@@ -337,12 +335,8 @@ try:
         if showGUI:
             # Draw map
             draw_world(est_pose, particles, world)
+            cv2.imwrite(f"world{counter}.png", world)
     
-            # Show frame
-            cv2.imshow(WIN_RF1, colour)
-
-            # Show world
-            cv2.imshow(WIN_World, world)
     
 
 finally: 
