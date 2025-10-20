@@ -168,7 +168,8 @@ def measurement_model(particle_list, landmarkIDs, dists, angles, sigma_d, sigma_
 
                 e_l = np.array([l_x - x_i, l_y - y_i]) / d_i
 
-                phi_i = np.sign(np.dot(e_l, e_theta_hat)) * np.arccos(np.dot(e_l, e_theta))
+                dot = np.clip(np.dot(e_l, e_theta), -1.0, 1.0)
+                phi_i = np.sign(np.dot(e_l, e_theta_hat)) * np.arccos(dot)
                 
                 p_phi_m = norm.pdf(angle,loc=phi_i, scale=sigma_theta)
 
@@ -177,7 +178,10 @@ def measurement_model(particle_list, landmarkIDs, dists, angles, sigma_d, sigma_
 
         particle.setWeight(p_observation_given_x)
 
-def resample_particles(particle_list, weights):
+def resample_particles(particle_list):
+    weights = np.array([p.getWeight() for p in particle_list])
+    weights /= np.sum(weights)
+
     cdf = np.cumsum(weights)
 
     resampled = []
@@ -290,15 +294,8 @@ try:
 
             # Compute particle weights
             measurement_model(particles, objectIDs, dists, angles, sigma_d, sigma_theta)
-
-            weights = np.array([p.getWeight() for p in particles])
-
-
-
-            weights /= np.sum(weights)
-
             # Resampling
-            particles = resample_particles(particles, weights)
+            particles = resample_particles(particles)
 
             # Draw detected objects
             cam.draw_aruco_objects(colour)
