@@ -119,8 +119,8 @@ def initialize_particles(num_particles):
 
 def sample_motion_model(particles_list, distance, angle, sigma_d, sigma_theta):
     for p in particles_list:
-        delta_x = distance * np.cos(p.getTheta())
-        delta_y = distance * np.sin(p.getTheta())
+        delta_x = distance * np.cos(p.getTheta() + angle)
+        delta_y = distance * np.sin(p.getTheta() + angle)
     
         particle.move_particle(p, delta_x, delta_y, angle)
     if not(distance == 0 and angle == 0):
