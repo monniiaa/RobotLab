@@ -158,19 +158,21 @@ def measurement_model(particle_list, landmarkIDs, dists, angles, sigma_d, sigma_
 
         particle.setWeight(p_observation_given_x)
 
-def resample_particles(particle_list):
-    weights = np.array([p.getWeight() for p in particle_list])
-    weights /= np.sum(weights)
+def resample_particles(particle_list, weights, w_fast, w_slow):
 
     cdf = np.cumsum(weights)
-
     resampled = []
-    for _ in range(len(particle_list)):
-        z = np.random.rand()
-        idx = np.searchsorted(cdf, z)
-        p_resampled = particle.Particle(particle_list[idx].getX(), particle_list[idx].getY(), particle_list[idx].getTheta(), 1.0/(len(particle_list)))
-        resampled.append(p_resampled)
 
+    for _ in range(len(particle_list)):
+        if random.random() < max(0.0, 1.0 - w_fast /w_slow):
+            p = initialize_particles(1)[0]
+            resampled.append(p)
+        else:
+            z = np.random.rand()
+            idx = np.searchsorted(cdf, z)
+            p_resampled = particle.Particle(particle_list[idx].getX(), particle_list[idx].getY(), particle_list[idx].getTheta(), 1.0/(len(particle_list)))
+            resampled.append(p_resampled)
+            
     return resampled
 
 
@@ -208,7 +210,11 @@ try:
     sigma_theta = 0.03
     sigma_d_obs = 20
     sigma_theta_obs = 0.05
+
     counter = 0
+
+    alpha_slow = 1
+    alpha_fast = 1
     #Initialize the robot
     if isRunningOnArlo():
         arlo = CalibratedRobot()
@@ -273,7 +279,17 @@ try:
             # Compute particle weights
             measurement_model(particles, objectIDs, dists, angles, sigma_d_obs, sigma_theta_obs)
             # Resampling
-            particles = resample_particles(particles)
+            weights = np.array([p.getWeight() for p in particles])
+
+            w_avg = np.mean(weights)
+
+            w_slow += alpha_slow * (w_avg - w_slow)
+
+            w_fast += alpha_fast * (w_avg - w_fast)
+
+            weights /= np.sum(weights)
+
+            particles = resample_particles(particles, weights, alpha_fast, alpha_slow)
 
             # Draw detected objects
             cam.draw_aruco_objects(colour)
