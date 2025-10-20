@@ -204,7 +204,7 @@ try:
     distance = 0.0 # distance driven at this time step
     angle = 0.0 # angle turned at this timestep
 
-    sigma_d = 10
+    sigma_d = 15
     sigma_theta = 0.03
     sigma_d_obs = 20
     sigma_theta_obs = 0.05
