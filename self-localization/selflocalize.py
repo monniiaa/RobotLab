@@ -213,7 +213,7 @@ try:
 
     counter = 0
 
-    w_slow = 1
+    w_slow = 0.1
     w_fast = 1
     alpha_slow = 1
     alpha_fast = 1
