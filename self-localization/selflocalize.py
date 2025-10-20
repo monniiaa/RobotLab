@@ -289,10 +289,10 @@ try:
         # Use motor controls to update particles
         if isRunningOnArlo():
             if not pathing.seen_all_landmarks():
-                drive = random.random() < (1/18)
-                distance, angle = pathing.explore_step(drive)
+                distance, angle = pathing.explore_step(False)
             else:
                 distance, angle = pathing.move_towards_goal_step(est_pose, center)
+                break
                     
         sample_motion_model(particles, distance, angle, sigma_d, sigma_theta)
         # Fetch next frame
