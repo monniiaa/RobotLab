@@ -273,10 +273,10 @@ try:
 
         # Use motor controls to update particles
         if isRunningOnArlo():
-            counter +=1
             if not pathing.seen_all_landmarks():
                 distance, angle = pathing.explore_step(False)
             else:
+                counter +=1
                 distance, angle = pathing.move_towards_goal_step(est_pose, center)
      
                     

@@ -67,7 +67,7 @@ class LocalizationPathing:
         distance_to_center = np.linalg.norm(direction)
         angle_to_center = np.arctan2(direction[1], direction[0]) - est_pose.getTheta()
 
-        if distance_to_center < 20:
+        if distance_to_center < 30:
             print("reached center")
             return 0, 0
         
@@ -76,9 +76,8 @@ class LocalizationPathing:
         
         print(f"distance moved: {distance_to_center}")
         print(f"angle (rad) turned: {angle_to_center}")
-        if abs(angle_to_center) > np.radians(5):
 
-            self.robot.turn_angle(np.degrees(angle_to_center))
+        self.robot.turn_angle(np.degrees(angle_to_center))
 
         self.robot.drive_distance_cm(move_dist)
 
