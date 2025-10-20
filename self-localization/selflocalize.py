@@ -220,8 +220,8 @@ try:
     distance = 0.0 # distance driven at this time step
     angle = 0.0 # angle turned at this timestep
 
-    sigma_d = 1
-    sigma_theta = 0.1
+    sigma_d = 20
+    sigma_theta = 0.5
     counter = 0
     #Initialize the robot
     if isRunningOnArlo():
