@@ -124,7 +124,7 @@ def sample_motion_model(particles_list, distance, angle, sigma_d, sigma_theta):
     
         particle.move_particle(p, delta_x, delta_y, angle)
     if not(distance == 0 and angle == 0):
-        particle.add_uncertainty_von_mises(particles_list, sigma_d, sigma_theta)
+        particle.add_uncertainty(particles_list, sigma_d, sigma_theta)
 
 
 def measurement_model(particle_list, landmarkIDs, dists, angles, sigma_d, sigma_theta):
