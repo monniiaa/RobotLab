@@ -123,28 +123,8 @@ def sample_motion_model(particles_list, distance, angle, sigma_d, sigma_theta):
         delta_y = distance * np.sin(p.getTheta())
     
         particle.move_particle(p, delta_x, delta_y, angle)
-
-    particle.add_uncertainty_von_mises(particles_list, sigma_d, sigma_theta)
-
-def motion_model_with_map(particle, distance, angle, sigma_d, sigma_theta, grid):
-    indices, valid = grid.world_to_grid([particle.getX(), particle.getY()])
-
-    p_map = 0 if (not valid or grid.in_collision(indices)) else 1
-    if p_map:
-        sample_motion_model([particle], distance, angle, sigma_d, sigma_theta)
-        return 1
-    
-    return 0
-
-def sample_motion_model_with_map(particles_list, distance, angle, sigma_d, sigma_theta, grid, max_tries=10):
-    for p in particles_list:
-        for attempt in range(max_tries):
-            pi = motion_model_with_map(p, distance, angle, sigma_d, sigma_theta, grid)
-            if pi > 0:
-                break
-        else:
-            # fallback
-            p.setWeight(0.01)  # low weight to indicate invalid
+    if not(distance == 0 and angle == 0):
+        particle.add_uncertainty_von_mises(particles_list, sigma_d, sigma_theta)
 
 
 def measurement_model(particle_list, landmarkIDs, dists, angles, sigma_d, sigma_theta):
@@ -230,10 +210,6 @@ try:
     #Initialize the robot
     if isRunningOnArlo():
         arlo = CalibratedRobot()
-
-    #grid = LandmarkOccupancyGrid([-100, -250], (400, 250))
-    #landmark_list = [(x, y, 20.0) for x, y in landmarks.values()]
-    #grid.add_landmarks(landmark_list)
 
 
     # Allocate space for world map
