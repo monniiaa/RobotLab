@@ -242,6 +242,8 @@ try:
     alpha_slow = 1
     alpha_fast = 1
 
+    test_counter = 0
+
     #Initialize the robot
     if isRunningOnArlo():
         arlo = CalibratedRobot()
@@ -291,7 +293,11 @@ try:
             if not pathing.seen_all_landmarks():
                 distance, angle = pathing.explore_step(False)
             else:
-                distance, angle = pathing.move_towards_goal_step(est_pose, center)
+                if test_counter < 2:
+                    test_counter += 1
+                    distance, angle = 0, 0
+                else:
+                    distance, angle = pathing.move_towards_goal_step(est_pose, center)
                 
                     
         sample_motion_model(particles, distance, angle, sigma_d, sigma_theta)
