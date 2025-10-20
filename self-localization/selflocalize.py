@@ -292,11 +292,7 @@ try:
                 drive = random.random() < (1/18)
                 distance, angle = pathing.explore_step(drive)
             else:
-                if stabilization_counter < 2:
-                    stabilization_counter += 1
-                    distance, angle = 0, 0
-                else:
-                    distance, angle = pathing.move_towards_goal_step(est_pose, center)
+                distance, angle = pathing.move_towards_goal_step(est_pose, center)
                     
         sample_motion_model(particles, distance, angle, sigma_d, sigma_theta)
         # Fetch next frame
