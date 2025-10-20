@@ -61,7 +61,7 @@ class LocalizationPathing:
         """
         return self.all_seen
     
-    def move_towards_goal_step(self, est_pose, center, step_cm=300):
+    def move_towards_goal_step(self, est_pose, center, step_cm=400):
         robot_pos = np.array([est_pose.getX(), est_pose.getY()])
         direction = center - robot_pos
         distance_to_center = np.linalg.norm(direction)
