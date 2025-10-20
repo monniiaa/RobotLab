@@ -215,7 +215,7 @@ try:
 
     w_slow = 1
     w_fast = 1
-    alpha_slow = 0.8
+    alpha_slow = 0.7
     alpha_fast = 0.9
     #Initialize the robot
     if isRunningOnArlo():
