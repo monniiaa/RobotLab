@@ -27,6 +27,7 @@ class LocalizationPathing:
 
         if not drive:
             self.robot.turn_angle(angle_deg)
+            angle_rad = np.radians(self.rotation_deg)
             time.sleep(0.2)
 
         if drive:
