@@ -204,8 +204,10 @@ try:
     distance = 0.0 # distance driven at this time step
     angle = 0.0 # angle turned at this timestep
 
-    sigma_d = 15
+    sigma_d = 10
     sigma_theta = 0.03
+    sigma_d_obs = 20
+    sigma_theta_obs = 0.05
     counter = 0
     #Initialize the robot
     if isRunningOnArlo():
@@ -269,7 +271,7 @@ try:
                 print("Object ID = ", objectIDs[i], ", Distance = ", dists[i], ", angle = ", angles[i])
 
             # Compute particle weights
-            measurement_model(particles, objectIDs, dists, angles, sigma_d, sigma_theta)
+            measurement_model(particles, objectIDs, dists, angles, sigma_d_obs, sigma_theta_obs)
             # Resampling
             particles = resample_particles(particles)
 
