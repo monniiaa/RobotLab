@@ -292,7 +292,7 @@ try:
                 distance, angle = pathing.explore_step(False)
             else:
                 distance, angle = pathing.move_towards_goal_step(est_pose, center)
-                break
+                
                     
         sample_motion_model(particles, distance, angle, sigma_d, sigma_theta)
         # Fetch next frame
