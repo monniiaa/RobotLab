@@ -72,16 +72,14 @@ class LocalizationPathing:
         
         angle_to_center = (angle_to_center + np.pi) % (2 * np.pi) - np.pi
         
-        move_distance = min(step_cm, distance_to_center)
-
-        print(f"distance moved: {move_distance}")
+        print(f"distance moved: {distance_to_center}")
         print(f"angle (rad) turned: {angle_to_center}")
         if abs(angle_to_center) > np.radians(5):
 
             self.robot.turn_angle(np.degrees(angle_to_center))
 
-        self.robot.drive_distance_cm(move_distance)
+        self.robot.drive_distance_cm(distance_to_center)
 
-        return move_distance, angle_to_center
+        return distance_to_center, angle_to_center
 
 
