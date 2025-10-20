@@ -66,7 +66,7 @@ class LocalizationPathing:
         distance_to_center = np.linalg.norm(direction)
         angle_to_center = np.arctan2(direction[1], direction[0]) - est_pose.getTheta()
 
-        if distance_to_center < 40:
+        if distance_to_center < 20:
             print("reached center")
             return 0, 0
         
