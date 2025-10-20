@@ -71,7 +71,6 @@ class LocalizationPathing:
             return 0, 0
         
         move_dist = min(step_cm, distance_to_center)
-        angle_to_center = (angle_to_center + np.pi) % (2 * np.pi) - np.pi
         
         print(f"distance moved: {distance_to_center}")
         print(f"angle (rad) turned: {angle_to_center}")
