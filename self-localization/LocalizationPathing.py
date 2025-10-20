@@ -60,16 +60,17 @@ class LocalizationPathing:
         """
         return self.all_seen
     
-    def move_towards_goal_step(self, est_pose, center, step_cm=10000):
+    def move_towards_goal_step(self, est_pose, center, step_cm=300):
         robot_pos = np.array([est_pose.getX(), est_pose.getY()])
         direction = center - robot_pos
         distance_to_center = np.linalg.norm(direction)
         angle_to_center = np.arctan2(direction[1], direction[0]) - est_pose.getTheta()
 
-        if distance_to_center < 5:
+        if distance_to_center < 40:
             print("reached center")
             return 0, 0
         
+        move_dist = min(step_cm, distance_to_center)
         angle_to_center = (angle_to_center + np.pi) % (2 * np.pi) - np.pi
         
         print(f"distance moved: {distance_to_center}")
@@ -78,7 +79,7 @@ class LocalizationPathing:
 
             self.robot.turn_angle(np.degrees(angle_to_center))
 
-        self.robot.drive_distance_cm(distance_to_center)
+        self.robot.drive_distance_cm(move_dist)
 
         return distance_to_center, angle_to_center
 
