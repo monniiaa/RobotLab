@@ -14,9 +14,9 @@ import random
 import cv2
 from LandmarkOccupancyGrid import LandmarkOccupancyGrid
 from RobotUtils.LandmarkUtils import LandmarkUtils
-from LandmarkOccupancyGrid import LandmarkOccupancyGrid
 from robot_model import RobotModel
 from robot_RRT import robot_RRT
+from findLandmarks import FindLandmarks
 
 # Flags
 showGUI = True  # Whether or not to open GUI windows
@@ -47,16 +47,15 @@ CBLACK = (0, 0, 0)
 
 # Landmarks.
 # The robot knows the position of 2 landmarks. Their coordinates are in the unit centimeters [cm].
-landmarkIDs = [6, 7]
+landmarkIDs = [1, 2, 3, 4]
 landmarks = {
-    6: (0.0, 0.0),  # Coordinates for landmark 1
-    7: (300.0, 0.0)  # Coordinates for landmark 2
+    1: (0.0, 0.0),  # Coordinates for landmark 1
+    2: (0.0, 200.0), # Coordinates for landmark 2
+    3: (100.0, 0.0), # Coordinates for landmark 3
+    4: (100.00, 200) #Coordinates for landmark 4
 }
 
-center = np.array([(landmarks[6][0] + landmarks[7][0]) / 2,
-                   (landmarks[6][1] + landmarks[7][1]) / 2])
-
-
+landmark_order = [1,2,3,4,1]
 
 landmark_colors = [CRED, CGREEN] # Colors used when drawing the landmarks
 
@@ -213,6 +212,8 @@ try:
     sigma_theta_obs = 0.05
 
     counter = 0
+
+    current_goal_idx = 0
     #Initialize the robot
     if isRunningOnArlo():
         arlo = CalibratedRobot()
@@ -231,6 +232,8 @@ try:
         pathing = LocalizationPathing(arlo, cam, landmarkIDs)
         landmark_utils = LandmarkUtils(cam, arlo)
         grid_map = LandmarkOccupancyGrid(low=(-120,-120), high=(520, 420), res=0.05)
+        robot = RobotModel()
+        landmarks_driver = FindLandmarks()
     else:
         #cam = camera.Camera(0, robottype='macbookpro', useCaptureThread=True)
         cam = camera.Camera(0, robottype='macbookpro', useCaptureThread=False)
@@ -258,12 +261,36 @@ try:
         # Use motor controls to update particles
         if isRunningOnArlo():
             counter +=1
-            if not pathing.seen_all_landmarks():
-                distance, angle = pathing.explore_step(False)
-            else:
-                distance, angle = pathing.move_towards_goal_step(est_pose, center)
-     
-                    
+            if counter > 1:
+                if not pathing.seen_enough_landmarks():
+                    distance, angle = pathing.explore_step(False)
+                    print("exploring")
+                else:
+                    goal_id = landmark_order[current_goal_idx]
+                    goal = landmarks[goal_id]
+                    if grid_map.is_path_clear([est_pose.getX(), est_pose.getY()], [goal[0], goal[1]], r_robot=20):
+                        print("driving to next landmark")
+                        moves = pathing.drive_to_goal_steps(goal)
+                        current_goal_idx +=1
+                    else:
+                        rrt = robot_RRT(
+                            start=[est_pose.getX(), est_pose.getY()],
+                            goal=[goal[0], goal[1]],
+                            robot_model=robot,
+                            map=grid_map,   
+                            )
+                        current_goal_idx += 1
+                        path =rrt.planning()
+                        smooth_path = rrt.smooth_path(path)
+                        moves = arlo.follow_path(smooth_path)
+                        for dist, ang in moves:
+                            sample_motion_model(particles, dist, ang, sigma_d, sigma_theta)
+            
+        if current_goal_idx >= len(landmark_order):
+            print("All goals reached!")
+            break
+
+                
         sample_motion_model(particles, distance, angle, sigma_d, sigma_theta)
         # Fetch next frame
         colour = cam.get_next_frame()
@@ -279,10 +306,6 @@ try:
             # Compute particle weights
             measurement_model(particles, objectIDs, dists, angles, sigma_d_obs, sigma_theta_obs)
             # Resampling
-            weights = np.array([p.getWeight() for p in particles])
-
-            weights /= np.sum(weights)
-
             particles = resample_particles(particles)
 
             # Draw detected objects

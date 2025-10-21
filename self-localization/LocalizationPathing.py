@@ -7,15 +7,16 @@ import numpy as np
 import time
 
 class LocalizationPathing:
-    def __init__(self, robot, camera, required_landmarks, step_cm=20, rotation_deg=20):
+    def __init__(self, robot, camera, required_landmarks, step_cm=20, rotation_deg=20, min_landmarks_to_see = 2):
         self.robot = robot
         self.camera = camera
         self.required_landmarks = set(required_landmarks)
         self.step_cm = step_cm
         self.rotation_deg = rotation_deg
+        self.min_landmarks_to_see = min_landmarks_to_see
 
         self.observed_landmarks = set()
-        self.all_seen = False
+        self.min_landmarks_met = False
 
     def explore_step(self, drive=False, min_dist = 400):
         dist = 0
@@ -50,37 +51,39 @@ class LocalizationPathing:
         if objectIDs is not None:
             self.observed_landmarks.update(objectIDs)
 
-        self.all_seen = self.required_landmarks.issubset(self.observed_landmarks)
+        num_seen = len(self.observed_landmarks.intersection(self.required_landmarks))
+        self.min_landmarks_met = num_seen >= self.min_landmarks_seen
 
         return dist, angle_rad
 
 
-    def seen_all_landmarks(self):
+    def seen_enough_landmarks(self):
         """
-        Returns True if all required landmarks have been observed.
+        Returns True if at least `min_landmarks_seen` have been observed.
         """
-        return self.all_seen
-    
-    def move_towards_goal_step(self, est_pose, center, step_cm=400):
-        robot_pos = np.array([est_pose.getX(), est_pose.getY()])
-        direction = center - robot_pos
-        distance_to_center = np.linalg.norm(direction)
-        angle_to_center = np.arctan2(direction[1], direction[0]) - est_pose.getTheta()
+        return self.required_landmarks_met
 
-        if distance_to_center < 30:
+    
+    def move_towards_goal_step(self, est_pose, goal, step_cm=400):
+        robot_pos = np.array([est_pose.getX(), est_pose.getY()])
+        direction = goal - robot_pos
+        distance_to_goal = np.linalg.norm(direction)
+        angle_to_goal = np.arctan2(direction[1], direction[0]) - est_pose.getTheta()
+
+        if distance_to_goal < 30:
             print("reached center")
             return 0, 0
         
-        move_dist = min(step_cm, distance_to_center)
+        move_dist = min(step_cm, distance_to_goal)
         angle_to_center = (angle_to_center + np.pi) % (2 * np.pi) - np.pi
         
-        print(f"distance moved: {distance_to_center}")
+        print(f"distance moved: {distance_to_goal}")
         print(f"angle (rad) turned: {angle_to_center}")
 
         self.robot.turn_angle(np.degrees(angle_to_center))
 
         self.robot.drive_distance_cm(move_dist)
 
-        return distance_to_center, angle_to_center
+        return distance_to_goal, angle_to_center
 
 

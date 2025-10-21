@@ -72,6 +72,7 @@ class CalibratedRobot:
         return  left, center, right
     
     def follow_path(self, path, start_orientation=np.array([0, 1])):
+        moves = []
         orientation_unit = start_orientation / np.linalg.norm(start_orientation)
 
         for i in range(len(path) - 1):
@@ -98,6 +99,10 @@ class CalibratedRobot:
 
             self.turn_angle(math.degrees(angle))
             self.drive_distance(distance)
+
+            moves.append((distance, angle))
+            
+        return moves
             
     def stop(self):
         self.arlo.stop()

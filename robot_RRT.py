@@ -29,8 +29,8 @@ class robot_RRT:
                  robot_model,   #model of the robot
                  map,           #map should allow the algorithm to query if the path in a node is in collision. note this will ignore the robot geom
                  expand_dis=0.2, # maximum step size that the tree expands when a new node is added
-                 path_resolution=0.05, #granularity of checking path for collinsions
-                 goal_sample_rate=25,
+                 path_resolution=5, #granularity of checking path for collinsions
+                 goal_sample_rate=40,
                  max_iter=500,
                  ):
 
@@ -167,7 +167,7 @@ class robot_RRT:
         return True
 
     
-    def smooth_path(self, path, iterations=100):
+    def smooth_path(self, path, iterations=200):
         if path is None or len(path) < 3:
             return path  # nothing to smooth
 

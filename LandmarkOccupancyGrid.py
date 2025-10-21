@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class LandmarkOccupancyGrid:
-    def __init__(self, low=(0, 0), high=(2, 2), res=0.05) -> None:
+    def __init__(self, low=(0, 0), high=(2, 2), res=5.0) -> None:
         self.map_area = [low, high]    #a rectangular area    
         self.map_size = np.array([high[0]-low[0], high[1]-low[1]])
         self.resolution = res
@@ -63,6 +63,22 @@ class LandmarkOccupancyGrid:
                 if self.in_collision(neighbor_indices):
                     return 1
         return 0
+    
+    def is_path_clear(self, start, goal, r_robot, step=5):
+        """
+        Checks if the straight-line path between start and goal is collision-free
+        for a robot with radius r_robot.
+        """
+        vec = np.array(goal) - np.array(start)
+        dist = np.linalg.norm(vec)
+
+        direction = vec / dist
+
+        for s in np.arange(0, dist, step):
+            point = np.array(start) + direction * s
+            if self.robot_collision(point, r_robot):
+                return False
+        return True
 
 
     def add_landmarks(self, landmarks):
