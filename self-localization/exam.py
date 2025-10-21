@@ -234,7 +234,7 @@ try:
         landmark_utils = LandmarkUtils(cam, arlo)
         grid_map = LandmarkOccupancyGrid(low=(-120,-120), high=(520, 420), res=0.05)
         robot = RobotModel()
-        landmarks_driver = FindLandmarks()
+        #landmarks_driver = FindLandmarks()
     else:
         #cam = camera.Camera(0, robottype='macbookpro', useCaptureThread=True)
         cam = camera.Camera(0, robottype='macbookpro', useCaptureThread=False)
