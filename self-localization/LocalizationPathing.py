@@ -64,7 +64,7 @@ class LocalizationPathing:
         return self.min_landmarks_met
 
     
-    def move_towards_goal_step(self, est_pose, goal, step_cm=400):
+    def move_towards_goal_step(self, est_pose, goal):
         robot_pos = np.array([est_pose.getX(), est_pose.getY()])
         direction = goal - robot_pos
         distance_to_goal = np.linalg.norm(direction)
@@ -74,7 +74,7 @@ class LocalizationPathing:
             print("reached center")
             return 0, 0
         
-        move_dist = min(step_cm, distance_to_goal)
+        move_dist = distance_to_goal
         angle_to_center = (angle_to_center + np.pi) % (2 * np.pi) - np.pi
         
         print(f"distance moved: {distance_to_goal}")

@@ -269,23 +269,24 @@ try:
                 else:
                     goal_id = landmark_order[current_goal_idx]
                     goal = landmarks[goal_id]
-                    if grid_map.is_path_clear([est_pose.getX(), est_pose.getY()], [goal[0], goal[1]], r_robot=20):
-                        print("driving to next landmark")
-                        moves = pathing.move_towards_goal_step(goal)
-                        current_goal_idx +=1
-                    else:
-                        rrt = robot_RRT(
-                            start=[est_pose.getX(), est_pose.getY()],
-                            goal=[goal[0], goal[1]],
-                            robot_model=robot,
-                            map=grid_map,   
-                            )
-                        current_goal_idx += 1
-                        path =rrt.planning()
-                        smooth_path = rrt.smooth_path(path)
-                        moves = arlo.follow_path(smooth_path)
-                        for dist, ang in moves:
-                            sample_motion_model(particles, dist, ang, sigma_d, sigma_theta)
+                    #print(f"{[est_pose.getX(), est_pose.getY()], [goal[0], goal[1]], grid_map.is_path_clear([est_pose.getX(), est_pose.getY()], [goal[0], goal[1]], r_robot=20)}")
+                    #if grid_map.is_path_clear([est_pose.getX(), est_pose.getY()], [goal[0], goal[1]], r_robot=20):
+                    print("driving to next landmark")
+                    pathing.move_towards_goal_step(goal)
+                    current_goal_idx +=1
+                    #else:
+                    #    rrt = robot_RRT(
+                    #        start=[est_pose.getX(), est_pose.getY()],
+                    #        goal=[goal[0], goal[1]],
+                    #        robot_model=robot,
+                    #        map=grid_map,   
+                    #        )
+                    #    current_goal_idx += 1
+                    #    path =rrt.planning()
+                    #    smooth_path = rrt.smooth_path(path)
+                    #    moves = arlo.follow_path(smooth_path)
+                    #    for dist, ang in moves:
+                    #        sample_motion_model(particles, dist, ang, sigma_d, sigma_theta)
             
         if current_goal_idx >= len(landmark_order):
             print("All goals reached!")
