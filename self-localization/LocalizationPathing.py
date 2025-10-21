@@ -23,7 +23,7 @@ class LocalizationPathing:
         angle_deg = self.rotation_deg 
         angle_rad = np.radians(angle_deg)
 
-        if self.all_seen:
+        if self.min_landmarks_met:
             return 0, 0 
 
         if not drive:
