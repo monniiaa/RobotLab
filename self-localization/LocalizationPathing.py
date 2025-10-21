@@ -52,7 +52,7 @@ class LocalizationPathing:
             self.observed_landmarks.update(objectIDs)
 
         num_seen = len(self.observed_landmarks.intersection(self.required_landmarks))
-        self.min_landmarks_met = num_seen >= self.min_landmarks_seen
+        self.min_landmarks_met = num_seen >= self.min_landmarks_to_see
 
         return dist, angle_rad
 
