@@ -262,7 +262,7 @@ try:
         # Use motor controls to update particles
         if isRunningOnArlo():
             counter +=1
-            if counter >= 1:
+            if counter > 1:
                 if not pathing.seen_enough_landmarks():
                     distance, angle = pathing.explore_step(False)
                     print("exploring")
