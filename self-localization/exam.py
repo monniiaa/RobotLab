@@ -52,7 +52,7 @@ landmarks = {
     1: (0.0, 0.0),  # Coordinates for landmark 1
     2: (0.0, 200.0), # Coordinates for landmark 2
     3: (100.0, 0.0), # Coordinates for landmark 3
-    4: (100.00, 200) #Coordinates for landmark 4
+    4: (100.0, 200.0) #Coordinates for landmark 4
 }
 
 landmark_order = [1,2,3,4,1]
