@@ -57,7 +57,8 @@ landmarks = {
 
 landmark_order = [1,2,3,4,1]
 
-landmark_colors = [CRED, CGREEN] # Colors used when drawing the landmarks
+landmark_colors = [CRED, CGREEN, CBLUE, CYELLOW]
+ # Colors used when drawing the landmarks
 
 def jet(x):
     """Colour map for drawing particles. This function determines the colour of 
