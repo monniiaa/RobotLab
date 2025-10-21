@@ -262,7 +262,7 @@ try:
         # Use motor controls to update particles
         if isRunningOnArlo():
             counter +=1
-            if counter > 1:
+            if counter >= 1:
                 if not pathing.seen_enough_landmarks():
                     distance, angle = pathing.explore_step(False)
                     print("exploring")
@@ -271,7 +271,7 @@ try:
                     goal = landmarks[goal_id]
                     if grid_map.is_path_clear([est_pose.getX(), est_pose.getY()], [goal[0], goal[1]], r_robot=20):
                         print("driving to next landmark")
-                        moves = pathing.drive_to_goal_steps(goal)
+                        moves = pathing.move_towards_goal_step(goal)
                         current_goal_idx +=1
                     else:
                         rrt = robot_RRT(
