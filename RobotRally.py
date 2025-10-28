@@ -46,17 +46,17 @@ CYELLOW = (0, 255, 255)
 landmarkIDs = [1, 2, 3, 4]
 landmarks = {
     1: (0.0, 0.0),  # Coordinates for landmark 1
-    2: (0.0, 200.0), # Coordinates for landmark 2
-    3: (200.0, 0.0), # Coordinates for landmark 3
-    4: (200.0, 200.0) # Coordinates for landmark 4
+    2: (0.0, 180.0), # Coordinates for landmark 2
+    3: (180.0, 0.0), # Coordinates for landmark 3
+    4: (180.0, 180.0) # Coordinates for landmark 4
 }
 
 offset = 0.0 
 goals = {
     1: (0.0 + offset, 0.0 + offset),
-    2: (0.0 + offset, 200.0 - offset),
-    3: (200.0 - offset, 0.0 + offset),
-    4: (200.0 - offset, 200.0 - offset)
+    2: (0.0 + offset, 180.0 - offset),
+    3: (180.0 - offset, 0.0 + offset),
+    4: (180.0 - offset, 180.0 - offset)
 }
 
 landmark_order = [1,2,3,4,1]
@@ -84,8 +84,7 @@ def sample_motion_model(particles_list, distance, angle, sigma_d, sigma_theta):
     
         particle.move_particle(p, delta_x, delta_y, angle)
     if not(distance == 0 and angle == 0):
-        particle.add_uncertainty(particles_list, sigma_d, sigma_theta)
-        sigma_d = sigma_d if distance != 0 else sigma_d * 0.1
+        sigma_d = sigma_d if distance != 0 else sigma_d * 0.5
         particle.add_uncertainty(particles_list, sigma_d, sigma_theta)
 
 
@@ -284,7 +283,6 @@ try:
                                 break
                     
         sample_motion_model(particles, distance, angle, sigma_d, sigma_theta)
-        particles = inject_random_particles(particles, ratio=0.05)
         # Fetch next frame
         colour = cam.get_next_frame()
         Landmarks_seen_this_step.clear()
