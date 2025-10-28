@@ -20,6 +20,7 @@ class LocalizationPathing:
         dist = 0
         angle_deg = self.rotation_deg 
         angle_rad = np.radians(angle_deg)
+        obstacle_detected = False
 
         if not drive:
             self.robot.turn_angle(angle_deg)
@@ -65,6 +66,7 @@ class LocalizationPathing:
         direction = goal - robot_pos
         distance_to_goal = np.linalg.norm(direction)
         angle_to_goal = np.arctan2(direction[1], direction[0]) - est_pose.getTheta()
+        obstacle_detected = False
         
         move_dist = distance_to_goal - 12.5
         angle_to_goal = (angle_to_goal + np.pi) % (2 * np.pi) - np.pi
@@ -74,11 +76,11 @@ class LocalizationPathing:
 
         self.robot.turn_angle(np.degrees(angle_to_goal))
 
-        distance, obstacleDetected = self.robot.drive_distance_cm(move_dist)
+        distance, obstacle_detected = self.robot.drive_distance_cm(move_dist)
         self.robot.stop()
         time.sleep(0.2)
 
-        return distance, angle_to_goal, obstacleDetected
+        return distance, angle_to_goal, obstacle_detected
 
 
 def avoid_obstacle(self,  dist = 10, turn_angle=45, stop_threshold=25):
