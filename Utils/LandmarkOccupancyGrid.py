@@ -1,0 +1,130 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+class LandmarkOccupancyGrid:
+    def __init__(self, low=(0, 0), high=(2, 2), res=5.0) -> None:
+        self.map_area = [low, high]    #a rectangular area    
+        self.map_size = np.array([high[0]-low[0], high[1]-low[1]])
+        self.resolution = res
+
+        self.n_grids = [ int(s//res) for s in self.map_size]
+
+        self.grid = np.zeros((self.n_grids[0], self.n_grids[1]), dtype=np.uint8)
+
+        self.extent = [self.map_area[0][0], self.map_area[1][0], self.map_area[0][1], self.map_area[1][1]]
+
+        self.landmarks = {}
+
+    def world_to_grid(self, pos):
+        """
+        Convert a position in world coordinates (x, y) to grid indices [i, j].
+        Returns (indices, valid), where valid is False if outside the map.
+        """
+        i = int((pos[0] - self.map_area[0][0]) // self.resolution)
+        j = int((pos[1] - self.map_area[0][1]) // self.resolution)
+
+        valid = True
+        if i < 0 or i >= self.n_grids[0] or j < 0 or j >= self.n_grids[1]:
+            valid = False
+
+        return [i, j], valid
+
+
+    def in_collision(self, indices):
+        """
+        find if the position is occupied or not. return if the queried pos is outside the map
+        """
+        for i, ind in enumerate(indices):
+            if ind < 0 or ind >= self.n_grids[i]:
+                return 1
+        
+        return self.grid[indices[0], indices[1]] 
+    
+    def robot_collision(self, camera_pos, r_robot, heading = 0):
+        """
+        Checks if a robot with radius r_robot at position (x, y) collides with an obstacle
+        """
+        if heading is not None:
+            center_pos = [
+                camera_pos[0] - r_robot * np.cos(heading),
+                camera_pos[1] - r_robot * np.sin(heading)
+            ]
+        else:
+            center_pos = [camera_pos[0], camera_pos[1] - r_robot]
+
+        indices = [
+            int((center_pos[0] - self.map_area[0][0]) // self.resolution),
+            int((center_pos[1] - self.map_area[0][1]) // self.resolution)
+        ]
+
+        cell_radius = int(np.ceil(r_robot / self.resolution))
+
+        for dx in range(-cell_radius, cell_radius + 1):
+            for dy in range(-cell_radius, cell_radius + 1):
+                neighbor_indices = [indices[0] + dx, indices[1] + dy]
+                if self.in_collision(neighbor_indices):
+                    return 1
+        return 0
+    
+    def is_path_clear(self, start, goal, r_robot, step=5):
+        """
+        Checks if the straight-line path between start and goal is collision-free
+        for a robot with radius r_robot.
+        """
+        vec = np.array(goal) - np.array(start)
+        dist = np.linalg.norm(vec)
+
+        direction = vec / dist
+
+        for s in np.arange(0, dist, step):
+            point = np.array(start) + direction * s
+            if self.robot_collision(point, r_robot):
+                return False
+        return True
+
+
+    def fill_landmarks(self, landmarks):
+        """Helper to fill grid based on a list of (x, y, r)."""
+        self.grid.fill(0)
+        for i in range(self.n_grids[0]):
+            for j in range(self.n_grids[1]):
+                centroid = np.array([
+                    self.map_area[0][0] + self.resolution * (i + 0.5),
+                    self.map_area[0][1] + self.resolution * (j + 0.5)
+                ])
+                for (x, y, r) in landmarks:
+                    if np.linalg.norm(centroid - np.array([x, y])) <= r:
+                        self.grid[i, j] = 1
+                        break  
+
+    def add_landmark(self, landmark_id, x, y, r):
+        """Add or update a single landmark and refresh grid."""
+        self.landmarks[landmark_id] = (x, y, r)
+        self.fill_landmarks(list(self.landmarks.values()))
+
+    def remove_landmark(self, landmark_id):
+        """Remove a landmark by ID and refresh grid."""
+        if landmark_id in self.landmarks:
+            del self.landmarks[landmark_id]
+            self.fill_landmarks(list(self.landmarks.values()))
+
+    def add_landmarks(self, landmarks):
+        """Add multiple landmarks at once (legacy support)."""
+        # Assign temporary IDs automatically if needed
+        for i, (x, y, r) in enumerate(landmarks, start=len(self.landmarks)):
+            self.landmarks[i] = (x, y, r)
+        self.fill_landmarks(list(self.landmarks.values()))
+    
+    def draw_map(self, robot_radius=None):
+        plt.imshow(self.grid.T, cmap="Greys", origin='lower', vmin=0, vmax=1, extent=self.extent, interpolation='none')
+
+    def save_map(self, filename="occupancy_grid.png"):
+        """
+        Save the current occupancy grid as an image file.
+        """
+        self.draw_map()
+        plt.savefig(filename)
+        plt.close()
+        print(f"Map saved as {filename}")
+
+
